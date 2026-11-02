@@ -1,60 +1,8 @@
-import {
-  BrowserRouter,
-  Routes,
-  Route,
-  Navigate,
-  useNavigate,
-} from 'react-router-dom';
+import {useEffect,useState} from 'react';
+import {BrowserRouter,Routes,Route,NavLink,Navigate,Outlet,useNavigate} from 'react-router-dom';
 import Login from './components/Login/Login';
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
 import CrudProductos from './components/Productos/crudProductos';
-import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
-
-function Productos() {
-  const navigate = useNavigate();
-
-  function cerrarSesion() {
-    localStorage.removeItem('token');
-    navigate('/', { replace: true });
-  }
-
-  return (
-    <>
-      <nav className="navbar bg-dark navbar-dark">
-        <div className="container">
-          <span className="navbar-brand">Inventario</span>
-          <button
-            className="btn btn-outline-light"
-            onClick={cerrarSesion}
-          >
-            Cerrar sesión
-          </button>
-        </div>
-      </nav>
-
-      <CrudProductos />
-    </>
-  );
-}
-
-export default function App() {
-  return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Login />} />
-
-        <Route
-          path="/productos"
-          element={
-            <ProtectedRoute>
-              <Productos />
-            </ProtectedRoute>
-          }
-        />
-
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-    </BrowserRouter>
-  );
-}
+function Layout(){const navigate=useNavigate();const[open,setOpen]=useState(false);let user={};try{user=JSON.parse(localStorage.getItem('usuario')||'{}');}catch{/* sesión anterior */}function logout(){localStorage.removeItem('token');localStorage.removeItem('usuario');navigate('/',{replace:true});}useEffect(()=>{window.addEventListener('nexo:logout',logout);return()=>window.removeEventListener('nexo:logout',logout);});return <div className="app-shell"><button className="mobile-menu" onClick={()=>setOpen(!open)} aria-expanded={open} aria-label="Abrir menú">☰</button>{open&&<button className="sidebar-shade" aria-label="Cerrar menú" onClick={()=>setOpen(false)}/>}<aside className={`sidebar ${open?'is-open':''}`}><div className="brand">◈ <span>NEXO<small>INVENTORY SYSTEM</small></span></div><div className="workspace-label">WORKSPACE / 01</div><nav aria-label="Menú principal">{[['/resumen','◫','Resumen'],['/productos','▦','Productos'],['/stock-bajo','△','Stock bajo']].map(([to,icon,name])=><NavLink key={to} to={to} onClick={()=>setOpen(false)}><span>{icon}</span>{name}<span className="nav-arrow">↗</span></NavLink>)}</nav><div className="sidebar-bottom"><div className="system-card"><span className="status-dot"/> ESPACIO DE INVENTARIO<small>Organiza. Actualiza. Controla.</small></div><div className="user-card"><span className="avatar">{(user.nombre||'U').charAt(0)}</span><div>{user.nombre||'Usuario'}<small>{user.rol||'Sesión iniciada'}</small></div></div><button className="logout" onClick={logout}>↪ Cerrar sesión</button></div></aside><main className="main-content"><header className="topbar"><span>CONTROL CENTER <b>/ INVENTARIO</b></span><span className="micro">NEXO · 09</span></header><Outlet/></main></div>;}
+export default function App(){return <BrowserRouter><Routes><Route path="/" element={<Login/>}/><Route element={<ProtectedRoute><Layout/></ProtectedRoute>}><Route path="productos" element={<CrudProductos mode="productos"/>}/><Route path="resumen" element={<CrudProductos mode="resumen"/>}/><Route path="stock-bajo" element={<CrudProductos mode="stock"/>}/></Route><Route path="*" element={<Navigate to="/" replace/>}/></Routes></BrowserRouter>;}
