@@ -16,3 +16,4 @@ module.exports = (rolesPermitidos = []) => async (req, res, next) => {
     next();
   } catch (error) { next(error); }
 };
+

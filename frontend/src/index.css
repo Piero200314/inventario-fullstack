@@ -1,2 +1,203 @@
-@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap');
-:root{font-family:Manrope,Arial,sans-serif;color:rgb(237,238,246);background:rgb(9,10,15);font-synthesis:none;color-scheme:dark}*{box-sizing:border-box}body{margin:0;min-width:320px}button,input,select,textarea{font:inherit}button,a,input,select,textarea{-webkit-tap-highlight-color:transparent}button,a{touch-action:manipulation}button{cursor:pointer}button:disabled{opacity:.55;cursor:wait}a{color:inherit}button:focus-visible,a:focus-visible{outline:2px solid rgb(255,85,110);outline-offset:4px}h1,h2,h3,p{margin-top:0}h1,h2,h3{font-family:'Space Grotesk',Arial,sans-serif}input,textarea,select{width:100%;background:rgb(15,17,25);border:1px solid rgb(51,53,68);border-radius:10px;padding:13px 14px;color:rgb(238,238,246);outline:none}input:focus,textarea:focus,select:focus{border-color:rgb(255,57,86);box-shadow:0 0 0 3px rgba(255,45,80,.1)}label{display:block;font-size:13px;margin:18px 0 8px;color:rgb(201,202,215)}
+:root {
+  font-family: Inter, Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.55;
+  font-synthesis: none;
+  color-scheme: dark;
+  --bg: #101117;
+  --panel: #191b25;
+  --surface: #202330;
+  --text: #f1f2f7;
+  --muted: #b2b8ca;
+  --line: #383d4e;
+  --red: #ff365e;
+  --accent: #ff86a0;
+  --button: #c81b43;
+  --success: #93ebc6;
+  --success-bg: #163c31;
+  --error: #ffc0cf;
+  --error-bg: #471f2c;
+  --shadow: 0 16px 50px #0002;
+  background: var(--bg);
+  color: var(--text);
+}
+:root[data-theme="light"] {
+  color-scheme: light;
+  --bg: #f3f4f8;
+  --panel: #fff;
+  --surface: #eceef4;
+  --text: #202331;
+  --muted: #555d70;
+  --line: #cdd2df;
+  --red: #d51f48;
+  --accent: #ad173a;
+  --button: #bc193d;
+  --success: #146044;
+  --success-bg: #e3f5ec;
+  --error: #9a1536;
+  --error-bg: #ffedf1;
+  --shadow: 0 12px 35px #2330520c;
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  min-width: 320px;
+  background: var(--bg);
+  color: var(--text);
+}
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+button,
+a {
+  touch-action: manipulation;
+}
+button {
+  cursor: pointer;
+}
+button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+a {
+  color: var(--accent);
+}
+h1,
+h2,
+h3 {
+  font-weight: 700;
+  line-height: 1.22;
+  letter-spacing: -0.035em;
+  margin: 0 0 16px;
+}
+h1 {
+  font-size: clamp(1.9rem, 3vw, 2.7rem);
+}
+h2 {
+  font-size: 1.25rem;
+}
+h3 {
+  font-size: 1.1rem;
+}
+p {
+  color: var(--muted);
+  margin: 0 0 16px;
+}
+small {
+  font-size: 0.8125rem;
+}
+b,
+strong {
+  font-weight: 700;
+}
+button:focus-visible,
+a:focus-visible,
+summary:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 4px;
+}
+input,
+select,
+textarea {
+  width: 100%;
+  min-height: 46px;
+  border: 1px solid var(--line);
+  background: var(--bg);
+  color: var(--text);
+  border-radius: 9px;
+  padding: 11px 12px;
+  outline: none;
+  font-size: 1rem;
+}
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--red);
+  box-shadow: 0 0 0 3px #ff365e22;
+}
+input::placeholder,
+textarea::placeholder {
+  color: var(--muted);
+  opacity: 0.85;
+}
+label {
+  display: block;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  margin: 0 0 16px;
+}
+label input,
+label select,
+label textarea {
+  display: block;
+  margin-top: 7px;
+}
+fieldset {
+  padding: 0;
+  border: 0;
+  margin: 0;
+  min-width: 0;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.9375rem;
+}
+th {
+  font-weight: 600;
+  color: var(--muted);
+  font-size: 0.8125rem;
+  white-space: nowrap;
+  background: var(--surface);
+}
+th,
+td {
+  padding: 17px 20px;
+  border-bottom: 1px solid var(--line);
+  vertical-align: middle;
+}
+td small {
+  display: block;
+  color: var(--muted);
+  margin-top: 4px;
+  max-width: 320px;
+  overflow-wrap: anywhere;
+}
+tr:last-child td {
+  border-bottom: 0;
+}
+dt {
+  color: var(--muted);
+  font-size: 0.8125rem;
+}
+dd {
+  margin: 3px 0 0;
+  overflow-wrap: anywhere;
+}
+summary {
+  cursor: pointer;
+  color: var(--accent);
+  font-weight: 600;
+}
+em {
+  font-style: normal;
+  color: var(--red);
+}
+[hidden] {
+  display: none !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *:before,
+  *:after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
