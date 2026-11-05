@@ -11,7 +11,10 @@ if (
     "Define NEXO_TEST_DB=nexo_test_nombre_unico, diferente a DB_NAME. Se creará y eliminará esta base nueva.",
   );
 const mysql = require("mysql2/promise");
+delete process.env.NEXO_ENV_FILE;
 async function main() {
+  if (!['127.0.0.1','localhost'].includes(process.env.DB_HOST || '127.0.0.1'))
+    throw Error('Esta prueba solo se ejecuta sobre MySQL/MariaDB local.');
   const connection = await mysql.createConnection({
     host: process.env.DB_HOST || "127.0.0.1",
     port: Number(process.env.DB_PORT || 3307),
@@ -29,6 +32,11 @@ async function main() {
     throw e;
   }
   process.env.DB_NAME = testName;
+  process.env.DB_DIALECT = 'mysql';
+  process.env.DATABASE_URL = '';
+  process.env.DIRECT_DATABASE_URL = '';
+  process.env.DB_SSL = 'false';
+  process.env.IMAGE_STORAGE = 'local';
   process.env.JWT_SECRET = randomUUID() + randomUUID();
   process.env.ALLOW_REGISTRATION = "false";
   process.env.UPLOAD_DIR =

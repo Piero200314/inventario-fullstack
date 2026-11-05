@@ -127,6 +127,7 @@ async function registrar(body, usuario) {
       ? -v.cantidad
       : v.cantidad;
     const despues = Number(p.stock) + delta;
+    if (despues < 0) V.fallo(`Stock insuficiente: hay ${p.stock} unidades disponibles y solicitas retirar ${Math.abs(delta)}.`);
     V.entero(despues, "Stock resultante");
     const m = await Movimiento.create(
       {

@@ -1,4 +1,5 @@
-require("dotenv").config();
+process.env.NEXO_DB_DIRECT = '1';
+require('../config/env');
 const db = require("../config/db");
 const {
   Producto,
@@ -9,11 +10,15 @@ const {
 } = require("../models/Logistica");
 async function migrar() {
   await db.authenticate();
-  // Solo tablas nuevas. Nunca force:true ni alter:true en los datos originales.
+  // Create missing tables; never alter or drop existing tables.
+  await Producto.sync();
+  await require('../models/Usuario').sync();
+  await require('../services/fechas-legacy')();
   await Proveedor.sync();
   await Detalle.sync();
   await Movimiento.sync();
   await Aviso.sync();
+  await require('../models/Imagen').sync();
   for (const original of await Producto.findAll())
     await db.transaction(async (transaction) => {
       const p = await Producto.findByPk(original.id, {

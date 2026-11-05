@@ -1,0 +1,152 @@
+/* NEXO V3 · Animated red light, independent from the card entry animation. */
+@property --nexo-frame-angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
+:root {
+  --nexo-neon-word: #ff4169;
+  --nexo-neon-halo: #ff174c;
+  --nexo-frame-base: #8d203e;
+  --nexo-frame-low: #ff25485c;
+  --nexo-frame-bright: #ff2955;
+  --nexo-frame-tip: #ffc1ce;
+  --nexo-frame-shade: #ff174c14;
+  --nexo-frame-speed: 8s;
+}
+
+:root[data-theme="light"] {
+  --nexo-neon-word: #c90836;
+  --nexo-frame-base: #e6738e;
+  --nexo-frame-low: #f02a5b66;
+  --nexo-frame-bright: #f50942;
+  --nexo-frame-tip: #ff668b;
+  --nexo-frame-shade: #f5094217;
+}
+
+/* Layered backgrounds keep the light strictly in the border, including tables
+   with horizontal scrolling. No overlays cover inputs, photos or focus rings. */
+:root :is(.stat, .panel, .product-card, .nexo-modal),
+:root[data-theme="light"] .app-shell .panel {
+  --nexo-frame-angle: 0deg;
+  border: 1px solid transparent;
+  background:
+    linear-gradient(var(--panel), var(--panel)) padding-box,
+    conic-gradient(
+      from var(--nexo-frame-angle),
+      var(--nexo-frame-base) 0deg,
+      var(--nexo-frame-low) 70deg,
+      var(--nexo-frame-bright) 116deg,
+      var(--nexo-frame-tip) 139deg,
+      var(--nexo-frame-bright) 157deg,
+      var(--nexo-frame-low) 205deg,
+      var(--nexo-frame-base) 280deg,
+      var(--nexo-frame-base) 360deg
+    ) border-box;
+  box-shadow: var(--shadow), 0 0 16px var(--nexo-frame-shade);
+}
+
+:root .nexo-modal {
+  box-shadow: 0 20px 100px #0007, 0 0 24px var(--nexo-frame-shade);
+}
+
+/* Full motion also works when the OS asks for reduced motion, as selected in
+   V2. The existing visible pause control still stops every animation. */
+:root[data-nexo-motion="full"] :is(.panel, .nexo-modal) {
+  animation: nexo-border-travel var(--nexo-frame-speed) linear infinite !important;
+}
+
+:root[data-nexo-motion="full"] :is(.stat, .product-card) {
+  animation:
+    nexo-arrive .6s ease both,
+    nexo-border-travel var(--nexo-frame-speed) linear infinite !important;
+}
+
+:root[data-nexo-motion="full"] .supplier-grid > .panel {
+  animation:
+    nexo-arrive .6s ease both,
+    nexo-border-travel var(--nexo-frame-speed) linear infinite !important;
+}
+
+:root[data-nexo-motion="full"] .nexo-modal {
+  animation:
+    nexo-arrive .22s ease both,
+    nexo-border-travel var(--nexo-frame-speed) linear infinite !important;
+}
+
+:root[data-nexo-motion="full"] :is(.stat, .product-card):hover {
+  /* Keep V2's lift without turning the animated border into a solid edge. */
+  border-color: transparent;
+  box-shadow: var(--shadow), 0 0 25px #ff174c30;
+}
+
+:root .sidebar nav a:is(.active, :hover, :focus-visible) {
+  --nexo-frame-angle: 0deg;
+  border: 1px solid transparent;
+  background:
+    linear-gradient(95deg, #ff174c24, #ff174c06) padding-box,
+    linear-gradient(var(--panel), var(--panel)) padding-box,
+    conic-gradient(
+      from var(--nexo-frame-angle),
+      var(--nexo-frame-base),
+      var(--nexo-frame-low) 70deg,
+      var(--nexo-frame-bright) 115deg,
+      var(--nexo-frame-tip) 140deg,
+      var(--nexo-frame-bright) 165deg,
+      var(--nexo-frame-low) 230deg,
+      var(--nexo-frame-base) 360deg
+    ) border-box;
+  box-shadow: inset 3px 0 #ff174c, 0 0 15px var(--nexo-frame-shade);
+}
+
+:root[data-nexo-motion="full"] .sidebar nav a:is(.active, :hover, :focus-visible) {
+  animation: nexo-border-travel 5s linear infinite !important;
+}
+
+/* The logo's word and diamond glow; its small subtitle stays crisp. */
+:root .brand {
+  color: var(--nexo-neon-halo);
+  text-shadow: 0 0 7px #ff174ca6, 0 0 20px #ff174c66;
+}
+
+:root .brand > span {
+  color: var(--nexo-neon-word);
+  text-shadow: 0 0 9px #ff174c7a, 0 0 25px #ff174c52;
+}
+
+:root .brand small {
+  color: var(--muted);
+  text-shadow: none;
+}
+
+:root[data-nexo-motion="full"] .brand > span {
+  animation: nexo-logo-glow 5s ease-in-out infinite !important;
+}
+
+:root .login-page .core {
+  color: #ff7593;
+  border-color: #ff174c;
+  text-shadow: 0 0 14px #ff174cbd, 0 0 35px #ff174c80;
+}
+
+/* Do not rely on inherited animation state: freeze both element and pseudo
+   animations and leave the red frames visible when the user chooses pause. */
+:root[data-nexo-motion="paused"] :is(.stat, .panel, .product-card, .nexo-modal,
+  .sidebar nav a, .brand, .brand > span) {
+  animation: none !important;
+}
+
+@keyframes nexo-border-travel {
+  from { --nexo-frame-angle: 0deg; }
+  to { --nexo-frame-angle: 360deg; }
+}
+
+@keyframes nexo-logo-glow {
+  0%, 100% { text-shadow: 0 0 8px #ff174c80, 0 0 22px #ff174c52; }
+  50% { text-shadow: 0 0 12px #ff174ca6, 0 0 30px #ff174c73; }
+}
+
+@media (max-width: 760px) {
+  :root { --nexo-frame-speed: 12s; }
+}
