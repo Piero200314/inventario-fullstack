@@ -4,6 +4,8 @@ const sequelize = require("../config/db");
 const Producto = sequelize.define(
   "Producto",
   {
+    createdAt: { type: DataTypes.DATE, allowNull: true },
+    updatedAt: { type: DataTypes.DATE, allowNull: true },
     nombre: {
       type: DataTypes.STRING,
       allowNull: false,

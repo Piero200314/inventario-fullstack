@@ -1,17 +1,16 @@
-require("dotenv").config();
+require('./config/env');
 const express = require("express"),
   cors = require("cors"),
   helmet = require("helmet");
 const { rateLimit } = require("express-rate-limit");
-const fs = require("node:fs"),
-  path = require("node:path"),
-  { randomUUID } = require("node:crypto");
+const { randomUUID } = require("node:crypto");
 const db = require("./config/db"),
   auth = require("./middleware/authMiddleware");
 const { Proveedor, Movimiento, Detalle } = require("./models/Logistica");
 require("./models/Usuario");
 const L = require("./services/logistica"),
   V = require("./services/validacion");
+const images = require("./services/imagenes");
 if (!process.env.JWT_SECRET || process.env.JWT_SECRET.length < 32)
   throw Error("Configura JWT_SECRET con scripts/configurar-seguridad.js");
 const app = express();
@@ -20,7 +19,7 @@ if (process.env.TRUST_PROXY === "1") app.set("trust proxy", 1);
 app.use(helmet({ crossOriginResourcePolicy: { policy: "cross-origin" } }));
 app.use(
   cors({
-    origin: process.env.FRONTEND_ORIGIN || "http://localhost:5173",
+    origin: process.env.FRONTEND_ORIGIN || process.env.RENDER_EXTERNAL_URL || "http://localhost:5173",
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
   }),
@@ -34,23 +33,24 @@ app.use(
     message: { error: "Demasiadas peticiones. Espera unos minutos." },
   }),
 );
-const images = path.resolve(
-  process.env.UPLOAD_DIR || path.join(__dirname, "uploads"),
-);
-fs.mkdirSync(images, { recursive: true });
-app.use(
-  "/media",
-  express.static(images, {
-    dotfiles: "deny",
-    index: false,
-    immutable: true,
-    maxAge: "7d",
-  }),
-);
+require('./services/frontend')(app);
 const access = auth(["Administrador", "Almacenero"]),
   admin = auth(["Administrador"]);
 const wrap = (fn) => (req, res, next) =>
   Promise.resolve(fn(req, res)).catch(next);
+app.get('/media/:nombre', wrap(async(req,res) => {
+  const photo = await images.read(req.params.nombre);
+  if(!photo) return res.status(404).json({error:'Foto no encontrada.'});
+  res.set('Cache-Control','public, max-age=604800, immutable');
+  res.set('ETag','"'+photo.sha256+'"');
+  res.type(photo.mime);
+  if(req.fresh) return res.status(304).end();
+  res.send(photo.buffer);
+}));
+app.get('/api/health', wrap(async(req,res) => {
+  await db.authenticate();
+  res.json({ok:true,servicio:'NEXO',database:db.getDialect(),imagenes:images.mode});
+}));
 app.post(
   "/api/imagenes",
   access,
@@ -59,21 +59,9 @@ app.post(
     limit: "3mb",
   }),
   wrap(async (req, res) => {
-    const b = req.body;
-    if (!Buffer.isBuffer(b) || b.length < 16)
-      V.fallo("Selecciona una imagen PNG, JPEG o WebP.");
-    let ext;
-    if (b.subarray(0, 8).equals(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10])))
-      ext = "png";
-    else if (b[0] === 255 && b[1] === 216 && b[2] === 255) ext = "jpg";
-    else if (
-      b.toString("ascii", 0, 4) === "RIFF" &&
-      b.toString("ascii", 8, 12) === "WEBP"
-    )
-      ext = "webp";
-    else V.fallo("Formato de imagen no admitido.");
+    const b = req.body, { ext } = images.inspect(b);
     const name = `${randomUUID()}.${ext}`;
-    await fs.promises.writeFile(path.join(images, name), b, { flag: "wx" });
+    await images.save(name, b);
     res.status(201).json({ foto: `/media/${name}` });
   }),
 );
@@ -90,7 +78,7 @@ app.use(
   }),
   authRoutes,
 );
-app.get("/", (req, res) => res.json({ servicio: "NEXO", version: "2.0" }));
+app.get("/", (req, res) => res.json({ servicio: "NEXO", version: "4.0" }));
 app.get(
   ["/productos", "/api/productos"],
   access,
@@ -209,7 +197,8 @@ app.use((e, req, res, next) => {
 async function start() {
   await db.authenticate();
   await Detalle.count();
-  app.listen(process.env.PORT || 3006, () =>
+  await images.Imagen.count();
+  app.listen(process.env.PORT || 3006, '0.0.0.0', () =>
     console.log("NEXO listo. Puerto " + (process.env.PORT || 3006)),
   );
 }

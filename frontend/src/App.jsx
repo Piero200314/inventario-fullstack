@@ -12,7 +12,8 @@ import {
 import Login from "./components/Login/Login";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
 import Theme from "./components/UI/Theme";
-import { InventoryProvider, useInventory } from "./context/Inventory";
+import { InventoryProvider } from "./context/Inventory";
+import {useInventory} from "./context/inventory-context";
 import InventoryPage from "./pages/InventoryPage";
 import Suppliers from "./pages/Suppliers";
 import Movements from "./pages/Movements";

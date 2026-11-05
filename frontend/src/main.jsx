@@ -6,6 +6,9 @@ import "@fontsource/inter/latin-600.css";
 import "@fontsource/inter/latin-700.css";
 import App from "./App";
 import "./index.css";
+import GalaxyBackground from "./components/UI/GalaxyBackground";
+import "./components/UI/GalaxyBackground.css";
+import "./components/UI/NeonFrames.css";
 class Boundary extends React.Component {
   state = { error: false };
   static getDerivedStateFromError() {
@@ -32,6 +35,7 @@ class Boundary extends React.Component {
 createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <Boundary>
+      <GalaxyBackground />
       <App />
     </Boundary>
   </React.StrictMode>,

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { useInventory } from "../context/Inventory";
+import { useInventory } from "../context/inventory-context";
 import {
   analytics,
   money,
@@ -9,7 +9,8 @@ import {
   downloadCSV,
 } from "../services/analytics";
 import ProductImage from "../components/UI/ProductImage";
-import ProductForm, { emptyProduct } from "../components/UI/ProductForm";
+import ProductForm from "../components/UI/ProductForm";
+import {emptyProduct} from "../services/product-helpers";
 import Charts from "../components/UI/Charts";
 import Modal from "../components/UI/Modal";
 export default function InventoryPage({ mode }) {
@@ -254,7 +255,7 @@ export default function InventoryPage({ mode }) {
             </p>
           )}
           <p className="results" role="status">
-            {filtered.length} productos {query && "encontrados"}
+            {filtered.length} {filtered.length === 1 ? "producto" : "productos"} {query && (filtered.length === 1 ? "encontrado" : "encontrados")}
           </p>
           {!filtered.length ? (
             <div className="panel empty-state">

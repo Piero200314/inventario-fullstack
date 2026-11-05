@@ -1,5 +1,5 @@
 // Ejecutar localmente para promover una cuenta ya registrada.
-require("dotenv").config();
+require('../config/env');
 const sequelize = require("../config/db");
 const Usuario = require("../models/Usuario");
 (async () => {

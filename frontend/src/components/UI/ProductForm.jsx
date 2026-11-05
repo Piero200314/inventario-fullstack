@@ -1,23 +1,8 @@
 import { useState } from "react";
 import Modal from "./Modal";
-import ProductImage, { uploadPhoto } from "./ProductImage";
-import { useInventory } from "../../context/Inventory";
-export const emptyProduct = () => ({
-  nombre: "",
-  descripcion: "",
-  sku: "",
-  categoria: "",
-  marca: "",
-  precio: "",
-  costo: "",
-  stock: 0,
-  minimo: 5,
-  objetivo: 20,
-  plazoDias: 7,
-  ubicacion: "",
-  proveedorId: "",
-  foto: "",
-});
+import ProductImage from "./ProductImage";
+import {uploadPhoto} from "../../services/product-helpers";
+import { useInventory } from "../../context/inventory-context";
 export default function ProductForm({ product, onClose }) {
   const { suppliers, saveProduct } = useInventory();
   const [form, setForm] = useState({

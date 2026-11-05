@@ -1,0 +1,83 @@
+/* Last global stylesheet: decorative layers stay behind the application. */
+.nexo-galaxy{position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:0;background:rgb(9,11,22);contain:strict}
+.galaxy-stars{position:absolute;inset:0;width:100%;height:100%;opacity:.85}
+.galaxy-nebula{position:absolute;filter:blur(65px);border-radius:50%;will-change:transform;animation:galaxy-drift 55s ease-in-out infinite alternate}
+.nebula-red{width:78vw;height:70vh;left:-18vw;top:12vh;background:radial-gradient(ellipse,rgba(179,20,72,.23),rgba(104,22,62,.13) 43%,transparent 73%)}
+.nebula-violet{width:74vw;height:90vh;right:-20vw;top:-23vh;background:radial-gradient(ellipse,rgba(75,48,158,.26),rgba(30,61,121,.15) 43%,transparent 72%);animation-duration:72s;animation-direction:alternate-reverse}
+.galaxy-spiral{position:absolute;width:68vw;height:68vw;right:-12vw;top:-25vw;opacity:.33;transform:rotate(-25deg) scaleY(.6);animation:galaxy-spin 240s linear infinite}
+.galaxy-spiral i{position:absolute;inset:10%;border-radius:50%;background:conic-gradient(from 20deg,transparent,rgba(131,70,184,.1) 13%,rgba(236,75,137,.24) 18%,transparent 28%,transparent 50%,rgba(102,111,219,.18) 63%,transparent 78%);filter:blur(12px)}
+.galaxy-spiral i:nth-child(2){inset:24%;transform:rotate(48deg)}.galaxy-spiral i:nth-child(3){inset:37%;background:radial-gradient(ellipse,rgba(255,169,192,.28),transparent 70%)}
+.galaxy-orbits{position:absolute;width:780px;height:780px;right:-300px;top:-160px;transform:rotate(-22deg);opacity:.62}
+.galaxy-orbit{position:absolute;border:1px solid rgba(178,165,231,.14);border-radius:50%}.orbit-one{inset:12%}.orbit-two{inset:0}.orbit-three{inset:25%}
+.orbit-rotation{position:absolute;inset:0;border-radius:50%;animation:planet-orbit 140s linear infinite}.orbit-two .orbit-rotation{animation-duration:210s;animation-direction:reverse;animation-delay:-55s}.orbit-three .orbit-rotation{animation-duration:105s;animation-delay:-35s}
+.galaxy-planet{position:absolute;width:46px;height:46px;left:calc(50% - 23px);top:-23px;display:block;border-radius:50%;box-shadow:inset -15px -9px 17px rgba(0,0,0,.8),0 0 22px rgba(230,83,132,.1)}
+.planet-red{background:repeating-linear-gradient(155deg,transparent 0 6px,rgba(250,169,143,.13) 8px 10px),radial-gradient(circle at 28% 25%,rgb(239,134,130),rgb(159,43,69) 45%,rgb(40,18,41) 82%)}
+.planet-blue{width:65px;height:65px;top:-32px;left:calc(50% - 32px);background:repeating-linear-gradient(15deg,transparent 0 7px,rgba(160,190,238,.12) 9px 11px),radial-gradient(circle at 30% 24%,rgb(137,167,222),rgb(67,73,139) 50%,rgb(18,23,55) 82%)}
+.planet-rock{width:25px;height:25px;top:-12px;left:calc(50% - 12px);background:radial-gradient(circle at 30% 25%,rgb(195,171,184),rgb(95,69,94) 55%,rgb(26,22,39) 90%)}
+.galaxy-distant-planet{position:absolute;width:110px;height:110px;right:7vw;bottom:5vh;border-radius:50%;background:repeating-linear-gradient(-22deg,transparent 0 10px,rgba(242,158,175,.09) 13px 16px),radial-gradient(circle at 30% 25%,rgb(153,83,117),rgb(62,33,70) 54%,rgb(12,14,29) 87%);box-shadow:inset -33px -16px 25px rgba(0,0,0,.8),0 0 35px rgba(164,39,91,.13);opacity:.52;animation:planet-float 28s ease-in-out infinite}
+.galaxy-distant-planet i{position:absolute;inset:37% -33%;border:4px solid rgba(157,118,169,.24);border-radius:50%;transform:rotate(-23deg);box-shadow:0 0 8px rgba(215,135,172,.12)}
+.galaxy-vignette{position:absolute;inset:0;background:radial-gradient(ellipse at 65% 25%,transparent 15%,rgba(9,10,18,.3) 70%,rgba(9,10,18,.65))}
+.app-shell,.login-page,.recovery{position:relative;z-index:1}
+.app-shell .topbar{background:rgba(16,17,23,.87)}.app-shell .panel{background:rgba(25,27,37,.95)}
+.galaxy-control{position:fixed;right:18px;bottom:14px;z-index:25;display:flex;align-items:center;gap:8px;min-height:40px;padding:8px 12px;border:1px solid rgb(63,66,88);border-radius:24px;background:rgba(22,24,36,.94);color:rgb(221,224,240);font:500 12px Inter,Arial,sans-serif;box-shadow:0 3px 16px rgba(0,0,0,.16)}.galaxy-control>span:first-child{font-size:15px}.workspace-footer{padding-bottom:65px}
+.nexo-galaxy.is-paused *{animation-play-state:paused!important}
+:root[data-theme=light] .nexo-galaxy{background:rgb(240,242,250)}
+:root[data-theme=light] .galaxy-nebula{opacity:.42}
+:root[data-theme=light] .galaxy-spiral{opacity:.2}
+:root[data-theme=light] .galaxy-vignette{background:radial-gradient(ellipse at 65% 25%,transparent,rgba(245,246,251,.35) 70%)}
+:root[data-theme=light] .galaxy-orbits{opacity:.33}
+:root[data-theme=light] .galaxy-orbit{border-color:rgba(106,77,144,.25)}
+:root[data-theme=light] .galaxy-distant-planet{opacity:.24}
+:root[data-theme=light] .app-shell .topbar{background:rgba(243,244,248,.93)}
+:root[data-theme=light] .app-shell .panel{background:rgba(255,255,255,.96)}
+:root[data-theme=light] .galaxy-control{background:rgba(255,255,255,.97);border-color:rgb(201,205,222);color:rgb(74,57,94)}
+@keyframes galaxy-drift{to{transform:translate(7vw,-4vh) scale(1.08)}}
+@keyframes galaxy-spin{to{transform:rotate(335deg) scaleY(.6)}}
+@keyframes planet-orbit{to{transform:rotate(360deg)}}
+@keyframes planet-float{50%{transform:translateY(-15px) rotate(4deg)}}
+@media(max-width:760px){.galaxy-nebula{filter:blur(45px)}.galaxy-spiral{width:110vw;height:110vw;right:-25vw;top:-24vw}.galaxy-orbits{width:500px;height:500px;right:-300px;top:-130px;opacity:.46}.galaxy-distant-planet{width:65px;height:65px;right:8vw;bottom:10vh}.galaxy-control{right:12px;bottom:10px;font-size:11px;min-height:40px}.nebula-red{width:100vw;left:-25vw}.nebula-violet{width:110vw}}
+@media(prefers-reduced-motion:reduce){.nexo-galaxy *{animation:none!important;will-change:auto!important}.galaxy-control{display:none}}
+
+@media(max-width:760px){.galaxy-control{width:42px;height:42px;padding:0;justify-content:center}.galaxy-control>span:last-child{display:none}}
+
+/* V2: the user explicitly enables motion; pause remains available on all systems. */
+:root[data-nexo-motion] .galaxy-control{display:flex!important}
+:root[data-nexo-motion=full] .galaxy-nebula{animation:galaxy-drift 19s ease-in-out infinite alternate!important}
+:root[data-nexo-motion=full] .nebula-violet{animation-duration:26s!important;animation-direction:alternate-reverse!important}
+:root[data-nexo-motion=full] .galaxy-spiral{animation:galaxy-spin 75s linear infinite!important}
+:root[data-nexo-motion=full] .orbit-one .orbit-rotation{animation:planet-orbit 28s linear infinite!important;animation-delay:-8s!important}
+:root[data-nexo-motion=full] .orbit-two .orbit-rotation{animation:planet-orbit 44s linear infinite reverse!important;animation-delay:-14s!important}
+:root[data-nexo-motion=full] .orbit-three .orbit-rotation{animation:planet-orbit 20s linear infinite!important;animation-delay:-10s!important}
+:root[data-nexo-motion=full] .galaxy-distant-planet{animation:planet-float 9s ease-in-out infinite!important}
+.galaxy-orbits{right:-180px;top:-150px;opacity:.75}
+.galaxy-distant-planet{opacity:.7}
+.galaxy-meteor{position:absolute;width:120px;height:1px;top:5%;left:-20%;background:linear-gradient(90deg,transparent,rgba(206,216,255,.65));transform:rotate(32deg);opacity:0;pointer-events:none}
+:root[data-nexo-motion=full] .meteor-one{animation:nexo-meteor 15s linear infinite!important;animation-delay:-6s!important}
+:root[data-nexo-motion=full] .meteor-two{top:32%;animation:nexo-meteor 23s linear infinite!important;animation-delay:-13s!important}
+:root[data-nexo-motion=full] .login-page .core{animation:nexo-core 7s ease-in-out infinite!important}
+:root[data-nexo-motion=full] .login-page .orbit{animation:orbit 11s linear infinite!important}
+:root[data-nexo-motion=full] .login-page .o2{animation:orbit 16s linear infinite reverse!important}
+.login-page .orbit:after{content:'';position:absolute;top:12%;left:15%;width:8px;height:8px;border-radius:50%;background:rgb(255,118,156);box-shadow:0 0 18px rgba(255,65,113,.7)}
+:root[data-nexo-motion=full] .login-page .login-art>.brand{animation:nexo-arrive .65s ease both!important}
+:root[data-nexo-motion=full] .login-page .login-art h1{animation:nexo-arrive .9s .08s ease both!important}
+:root[data-nexo-motion=full] .login-page .login-card{animation:nexo-arrive .9s .1s ease both!important}
+:root[data-nexo-motion=full] .login-page .login-foot .status-dot{animation:nexo-pulse 3.5s ease-in-out infinite!important}
+:root[data-nexo-motion=full] .primary{animation:nexo-glow 4.5s ease-in-out infinite!important}
+:root[data-nexo-motion=full] .page-heading{animation:nexo-arrive .6s ease both!important}
+:root[data-nexo-motion=full] .stat,:root[data-nexo-motion=full] .product-card,:root[data-nexo-motion=full] .supplier-grid>.panel{animation:nexo-arrive .6s ease both!important}
+:root[data-nexo-motion=full] .stat:nth-child(2),:root[data-nexo-motion=full] .product-card:nth-child(3n+2){animation-delay:.08s!important}
+:root[data-nexo-motion=full] .stat:nth-child(3),:root[data-nexo-motion=full] .product-card:nth-child(3n){animation-delay:.16s!important}
+:root[data-nexo-motion=full] .stat:nth-child(4){animation-delay:.24s!important}
+:root[data-nexo-motion=full] .nexo-modal{animation:nexo-arrive .22s ease both!important}
+:root[data-nexo-motion=full] .primary,:root[data-nexo-motion=full] .secondary,:root[data-nexo-motion=full] .sidebar nav a,:root[data-nexo-motion=full] .product-card,:root[data-nexo-motion=full] .stat,:root[data-nexo-motion=full] input,:root[data-nexo-motion=full] select{transition:transform .25s ease,box-shadow .3s ease,border-color .3s ease,background-color .3s ease!important}
+:root[data-nexo-motion=full] .primary:hover,:root[data-nexo-motion=full] .secondary:hover{transform:translateY(-2px)}
+:root[data-nexo-motion=full] .primary:active,:root[data-nexo-motion=full] .secondary:active{transform:translateY(0) scale(.98)}
+:root[data-nexo-motion=full] .product-card:hover,:root[data-nexo-motion=full] .stat:hover{transform:translateY(-4px);border-color:rgba(255,62,108,.5);box-shadow:0 12px 32px rgba(255,43,89,.12)}
+:root[data-nexo-motion=full] .sidebar nav a:hover{transform:translateX(3px)}
+:root[data-nexo-motion=paused] .nexo-galaxy *,:root[data-nexo-motion=paused] .login-page *,:root[data-nexo-motion=paused] .app-shell *{animation:none!important;transition:none!important;will-change:auto!important}
+@keyframes nexo-core{0%,100%{transform:translateY(0) rotate(-7deg);box-shadow:0 0 45px rgba(255,45,99,.2)}50%{transform:translateY(-19px) rotate(6deg);box-shadow:0 0 85px rgba(255,45,99,.38)}}
+@keyframes nexo-arrive{from{opacity:0;translate:0 12px}to{opacity:1;translate:0 0}}
+@keyframes nexo-glow{0%,100%{box-shadow:0 4px 20px rgba(255,43,89,.14)}50%{box-shadow:0 4px 31px rgba(255,43,89,.32)}}
+@keyframes nexo-pulse{50%{opacity:.5;box-shadow:0 0 15px rgba(255,70,120,.6)}}
+@keyframes nexo-meteor{0%,70%,100%{opacity:0;translate:0 0}73%{opacity:.65}83%{opacity:0;translate:95vw 52vh}}
+@media(max-width:760px){.galaxy-orbits{right:-280px;top:-150px;opacity:.6}.galaxy-meteor{width:70px}}

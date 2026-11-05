@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { useInventory } from "../context/Inventory";
+import { useInventory } from "../context/inventory-context";
 import { analytics, money, downloadCSV } from "../services/analytics";
 export default function Reports() {
   const { items, moves, suppliers } = useInventory(),

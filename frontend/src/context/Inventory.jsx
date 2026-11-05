@@ -1,14 +1,11 @@
 import {
-  createContext,
-  useContext,
   useEffect,
   useRef,
   useState,
   useCallback,
 } from "react";
 import api from "../services/api";
-const Context = createContext(null);
-export const useInventory = () => useContext(Context);
+import {InventoryContext as Context} from "./inventory-context";
 export function InventoryProvider({ children }) {
   const [data, setData] = useState({ items: [], suppliers: [], moves: [] });
   const [loading, setLoading] = useState(true),
@@ -60,7 +57,8 @@ export function InventoryProvider({ children }) {
   }, []);
   useEffect(() => {
     mounted.current = true;
-    load();
+    const lifecycle = new AbortController();
+    queueMicrotask(() => { if (!lifecycle.signal.aborted) load(); });
     const focus = () => {
       if (!document.hidden && Date.now() - lastLoad.current > 30000) load();
     };
@@ -68,7 +66,7 @@ export function InventoryProvider({ children }) {
     window.addEventListener("focus", focus);
     return () => {
       mounted.current = false;
-      request.current++;
+      lifecycle.abort();
       clearInterval(timer);
       window.removeEventListener("focus", focus);
     };

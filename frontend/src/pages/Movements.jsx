@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { useInventory } from "../context/Inventory";
+import { useInventory } from "../context/inventory-context";
 import { downloadCSV } from "../services/analytics";
 import Modal from "../components/UI/Modal";
 const names = {
@@ -231,7 +231,7 @@ export default function Movements() {
                   <option value="">Selecciona un producto</option>
                   {items.map((p) => (
                     <option key={p.id} value={p.id}>
-                      {p.nombre} · Stock {p.stock}
+                      {p.sku} · {p.nombre} · Stock {p.stock}
                     </option>
                   ))}
                 </select>

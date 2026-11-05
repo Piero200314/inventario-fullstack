@@ -4,8 +4,9 @@ const path = require("path");
 const crypto = require("crypto");
 const envPath = path.join(__dirname, "..", ".env");
 if (!fs.existsSync(envPath))
-  throw new Error("Falta .env. Conserva el archivo de la guía 7.");
+  throw new Error("Falta .env. Copia antes .env.example como .env.");
 let contenido = fs.readFileSync(envPath, "utf8");
+contenido = contenido.replace(/^\s*JWT_SECRET\s*=\s*(?:""|'')?\s*$/gm, "");
 const variables = {
   JWT_SECRET: crypto.randomBytes(48).toString("hex"),
   JWT_EXPIRES_IN: "1h",

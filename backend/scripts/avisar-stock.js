@@ -1,4 +1,4 @@
-require("dotenv").config();
+require('../config/env');
 const db = require("../config/db"),
   { Aviso } = require("../models/Logistica"),
   { lista } = require("../services/logistica");

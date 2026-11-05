@@ -1,8 +1,8 @@
-require('dotenv').config();
+require('../config/env');
 const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
 const db=require('../config/db'),Usuario=require('../models/Usuario');
 const {Producto,Detalle,Proveedor,Movimiento}=require('../models/Logistica');
-const V=require('../services/validacion');
+const V=require('../services/validacion'),Images=require('../services/imagenes');
 const dir=path.resolve(__dirname,'../catalogo-demo');
 function sha(b){return crypto.createHash('sha256').update(b).digest('hex');}
 async function main(){
@@ -41,9 +41,8 @@ async function main(){
     if(!supplier)supplier=await Proveedor.create(valid,{transaction});suppliers.push(supplier);
    }
    for(const p of pending){
-    const target=path.join(uploads,p.filename);
-    if(fs.existsSync(target)){if(sha(fs.readFileSync(target))!==sha(p.image))throw Error('La ruta de foto ya tiene contenido distinto.');}
-    else{fs.writeFileSync(target,p.image,{flag:'wx'});copied.push(target);}
+    const saved=await Images.save(p.filename,p.image,transaction);
+    if(saved.created&&saved.path)copied.push(saved.path);
     const product=await Producto.create({...p.validated.base,stock:p.row.stock},{transaction});
     await Detalle.create({...p.validated.detalle,productoId:product.id,proveedorId:suppliers[p.row.proveedor].id},{transaction});
     await Movimiento.create({productoId:product.id,productoNombre:product.nombre,tipo:'apertura',cantidad:p.row.stock,antes:0,despues:p.row.stock,costo:p.row.costo,precio:p.row.precio,motivo:'Catálogo DEMO v1 · saldo inicial ficticio',usuarioId:user.id,responsable:user.nombre,clave:`demo-catalogo-v1-${p.row.sku}`},{transaction});

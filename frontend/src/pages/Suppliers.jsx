@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useInventory } from "../context/Inventory";
+import { useInventory } from "../context/inventory-context";
 import Modal from "../components/UI/Modal";
 export default function Suppliers() {
   const { suppliers, items, saveSupplier } = useInventory();

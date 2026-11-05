@@ -1,452 +1,76 @@
-\# 📦 Inventario Fullstack
+# NEXO V5 — inventario con Aiven y preparación para Render
 
+Proyecto completo consolidado el **4 de noviembre de 2026**. Incluye frontend, backend, los parches entregados, 20 fotografías del catálogo DEMO, pruebas y documentación.
 
+**Empieza por [ACTUALIZAR_PC_PRINCIPAL.md](ACTUALIZAR_PC_PRINCIPAL.md)**. Para publicar después, sigue [LEEME_RENDER.md](LEEME_RENDER.md).
 
-Sistema académico de gestión de productos con React, Express y MySQL, desarrollado en las prácticas de Fullstack de SENATI.
+## Funciones
 
+- Resumen, Catálogo, Stock y alertas, Proveedores, Movimientos y Reposición/reportes.
+- Estado compartido actualizado al guardar productos o registrar movimientos, sin F5. Otras ventanas/dispositivos consultan al pulsar Sincronizar, recuperar foco y periódicamente; no usa WebSockets.
+- Fotos optimizadas, SKU único, categoría, marca, costo, precio, mínimo, objetivo, plazo de suministro, ubicación y proveedor.
+- Recepciones con proveedor y persona que entrega; responsable, referencia y observaciones en el historial.
+- Stock transaccional y bloqueo de fila; rechazo de saldos negativos y conflictos de edición. Mensaje de stock insuficiente comprensible.
+- Archivado de productos con stock cero, conservando historial.
+- Gráficos de disponibilidad, existencias y entradas/salidas; ventas y propuestas orientativas de reposición.
+- Inter con pesos locales, tema claro/oscuro, diseño adaptable, galaxia con estrellas y planetas animados, marcos rojos neón y control para pausar el movimiento.
+- JWT, bcrypt, roles Administrador/Almacenero y registro público desactivado por defecto.
+- PostgreSQL de Aiven o MySQL/MariaDB local mediante configuración. Cada proceso usa una base; no hay sincronización bidireccional automática ni modo offline con reconciliación.
+- Fotos en PostgreSQL con IMAGE_STORAGE=database para conservarlas entre dispositivos y reinicios de Render.
+- Traslado con validación a un destino vacío; compatibilidad con tablas antiguas sin createdAt/updatedAt. Fechas históricas desconocidas se conservan como NULL.
+- Catálogo DEMO opcional: 20 productos, 20 fotos y 3 proveedores ficticios. Omite los SKU existentes sin sobrescribirlos.
+- Respaldo y archivado dirigido de LEGACY-4 a LEGACY-8: herramienta para la captura de la otra PC, no una limpieza general.
+- React y Express en un solo servicio de Render: mismo dominio para la API, rutas recargables, TLS con CA, build y comprobación de rutas privadas de Git.
 
+## Datos privados
 
-\## Estado actual
+Este ZIP no contiene .env reales, contraseñas, tokens, certificados, respaldos personales ni fotos adicionales que solo estén en backend/uploads de otra instalación. Sí contiene las 20 imágenes ficticias del catálogo DEMO.
 
+Para consultar tus registros cloud, conecta el backend al mismo Aiven. El inventario que aún esté solo en MySQL local debe respaldarse por separado. La importación completa exige una base vacía: no mezcla ni elimina un destino poblado.
 
+.gitignore excluye .env y sus copias, certificados, respaldos y archivos generados. Un archivo ya rastreado debe retirarse del índice de Git sin borrar la copia local. Las plantillas .env.example no contienen credenciales reales.
 
-| Componente | Estado |
+## Arranque
 
-|---|---|
-
-| Backend CRUD | Implementado |
-
-| Registro y login JWT | Implementados |
-
-| Permisos por rol | Implementados |
-
-| Interfaz de productos | Implementada |
-
-| Login y envío del JWT desde React | Pendientes para la guía 11 |
-
-| Mejoras visuales | Pendientes para la guía 9 |
-
-
-
-\*\*El frontend actual aún no envía el token JWT.\*\* Con el backend protegido, sus peticiones de productos reciben 401. El CRUD autenticado se puede probar desde Postman.
-
-
-
-\## Tecnologías
-
-
-
-| Capa | Tecnologías |
-
-|---|---|
-
-| Frontend | React, Vite, Bootstrap y Axios |
-
-| Backend | Node.js y Express |
-
-| Base de datos | MySQL, Sequelize y mysql2 |
-
-| Autenticación | bcryptjs y jsonwebtoken |
-
-| Protección | Helmet, CORS y express-rate-limit |
-
-
-
-\## Organización
-
-
-
-| Carpeta | Contenido |
-
-|---|---|
-
-| backend/config | Conexión a MySQL |
-
-| backend/models | Producto y Usuario |
-
-| backend/controllers | Registro e inicio de sesión |
-
-| backend/middleware | Autenticación y permisos |
-
-| backend/routes | Rutas de autenticación |
-
-| backend/scripts | Configuración y promoción de usuarios |
-
-| frontend/src/components | Interfaz de productos |
-
-| frontend/src/services | Cliente Axios |
-
-
-
-\## Instalación
-
-
-
-Requisitos: Git, Node.js/npm compatibles con las dependencias del proyecto, MySQL y Postman. Laragon puede proporcionar MySQL; Apache no es necesario.
-
-
+Node >=22.12 compatible con Vite; Render se fija en 24.22.1. Desde la raíz:
 
 ```bash
-
-git clone https://github.com/Piero200314/inventario-fullstack.git
-
-cd inventario-fullstack
-
+npm.cmd ci --prefix backend
+npm.cmd ci --prefix frontend
 ```
 
-
-
-\### 1. Crear la base de datos
-
-
-
-Inicia MySQL y ejecuta:
-
-
-
-```sql
-
-CREATE DATABASE IF NOT EXISTS apidb
-
-CHARACTER SET utf8mb4
-
-COLLATE utf8mb4\_unicode\_ci;
-
-```
-
-
-
-\### 2. Configurar el backend
-
-
+Conserva tu backend/.env si funciona. Para una instalación nueva usa backend/.env.example como plantilla y completa privadamente Aiven y el CA. Dentro de backend:
 
 ```bash
-
-cd backend
-
-npm ci
-
-```
-
-
-
-Crea `backend/.env` con tu configuración local:
-
-
-
-```dotenv
-
-DB\_HOST=127.0.0.1
-
-DB\_PORT=3306
-
-DB\_NAME=apidb
-
-DB\_USER=tu\_usuario
-
-DB\_PASS=tu\_contrasena
-
-PORT=3006
-
-```
-
-
-
-Desde la carpeta backend:
-
-
-
-```bash
-
 node scripts/configurar-seguridad.js
-
-npm run dev
-
+npm.cmd run db:check
+npm.cmd run dev
 ```
 
+En otra terminal, dentro de frontend: `npm.cmd run dev`. Abre http://localhost:5173. La API usa http://localhost:3006. VITE_API_URL solo recibe una URL HTTP de API, nunca credenciales PostgreSQL. Si el puerto de Vite cambia, ajusta FRONTEND_ORIGIN y reinicia la API.
 
+Para una base nueva ejecuta primero migrate. Aiven ya tenía tablas y usuarios en la instalación anterior: no repitas importaciones ni crees otro administrador para conectar una nueva PC.
 
-El script añade las variables de seguridad ausentes:
-
-
-
-\- `JWT\_SECRET`: clave aleatoria.
-
-\- `JWT\_EXPIRES\_IN`: duración de 1 hora.
-
-\- `FRONTEND\_ORIGIN`: http://localhost:5173.
-
-
-
-Conserva los valores existentes; no reemplaza una clave ya definida pero inválida.
-
-
-
-La API se inicia en http://localhost:3006.
-
-
-
-\### 3. Iniciar el frontend
-
-
-
-En otra terminal, desde la raíz del proyecto:
-
-
+## Comprobaciones
 
 ```bash
-
-cd frontend
-
-npm ci
-
-npm run dev
-
+npm.cmd test --prefix backend
+npm.cmd run lint --prefix frontend
+npm.cmd run build --prefix frontend
+node scripts/revisar-git.cjs
 ```
 
+La última comprobación requiere estar dentro del repositorio Git. Detecta rutas privadas/generadas, no sustituye revisar el contenido del commit.
 
+## Documentación
 
-Abre la dirección que indique Vite, normalmente http://localhost:5173.
+- [Actualizar la PC principal](ACTUALIZAR_PC_PRINCIPAL.md).
+- [Render con Aiven](LEEME_RENDER.md).
+- [Cambios y estado real](docs/CAMBIOS_V5.md).
+- [Parche de fechas](docs/PARCHE_FECHAS_AIVEN.md).
+- [Catálogo y limpieza dirigida](docs/CATALOGO_Y_LIMPIEZA.md).
+- [Arquitectura](docs/ARQUITECTURA.md) y [Telegram opcional](docs/TELEGRAM_Y_NUBE.md).
 
+La guía de Neon y los PDF de laboratorio/video se conservan como documentos históricos; para Aiven y Render prevalece V5. Telegram necesita configuración y ejecución: no está activado por descargar el código. Las propuestas no gestionan órdenes de compra; no hay lotes, FEFO, FIFO ni cálculo de utilidad realizada.
 
-
-Axios utiliza `http://localhost:3006` en `frontend/src/services/api.js`. Si cambias los puertos, ajusta también la URL de Axios y `FRONTEND\_ORIGIN`.
-
-
-
-\## Endpoints
-
-
-
-| Método | Ruta | Acceso |
-
-|---|---|---|
-
-| GET | / | Público |
-
-| POST | /api/auth/registro | Público |
-
-| POST | /api/auth/login | Público |
-
-| GET | /api/productos | Almacenero y Administrador |
-
-| POST | /api/productos | Almacenero y Administrador |
-
-| PUT | /api/productos/:id | Almacenero y Administrador |
-
-| DELETE | /api/productos/:id | Administrador |
-
-
-
-Los endpoints de productos también funcionan bajo `/productos`, con los mismos permisos.
-
-
-
-\## Pruebas con Postman
-
-
-
-\### Registro
-
-
-
-Envía POST a `/api/auth/registro`, con Body → raw → JSON:
-
-
-
-```json
-
-{
-
-&#x20; "nombre": "Usuario de prueba",
-
-&#x20; "email": "usuario@example.com",
-
-&#x20; "password": "REEMPLAZAR\_CON\_CLAVE\_DE\_PRUEBA"
-
-}
-
-```
-
-
-
-Utiliza una contraseña propia de al menos 10 caracteres y como máximo 72 bytes. El registro público asigna el rol Almacenero.
-
-
-
-\### Inicio de sesión
-
-
-
-Envía POST a `/api/auth/login` con `email` y `password`.
-
-
-
-Copia el token recibido y pégalo en Authorization → Bearer Token para las solicitudes de productos.
-
-
-
-\### Crear un producto
-
-
-
-Envía POST a `/api/productos` con un token válido:
-
-
-
-```json
-
-{
-
-&#x20; "nombre": "Producto de prueba",
-
-&#x20; "descripcion": "Registro autenticado",
-
-&#x20; "precio": 19.90,
-
-&#x20; "stock": 8
-
-}
-
-```
-
-
-
-\### Probar el rol Administrador
-
-
-
-Registra primero la cuenta y ejecuta desde backend:
-
-
-
-```bash
-
-node scripts/hacer-admin.js usuario@example.com
-
-```
-
-
-
-Vuelve a iniciar sesión y utiliza el nuevo token para eliminar un producto.
-
-
-
-\## Seguridad implementada
-
-
-
-| Control | Configuración |
-
-|---|---|
-
-| Contraseñas | Hash bcrypt con factor 12 |
-
-| JWT | HS256 y expiración predeterminada de 1 hora |
-
-| Autorización | Roles consultados en MySQL |
-
-| Helmet | Cabeceras de seguridad |
-
-| CORS | Origen del frontend configurado |
-
-| Límite global | 100 peticiones por IP cada 15 minutos |
-
-| Límite de autenticación | 20 peticiones por IP cada 15 minutos |
-
-| JSON | Cuerpo máximo de 20 kb |
-
-
-
-CORS no sustituye la autenticación. Estas medidas no garantizan por sí solas la ausencia de vulnerabilidades.
-
-
-
-No publiques `.env`, contraseñas ni tokens.
-
-
-
-\## Validación realizada
-
-
-
-\- Registro y login correctos.
-
-\- Consulta rechazada sin token y aceptada con token.
-
-\- Creación y actualización autenticadas.
-
-\- Eliminación denegada a Almacenero.
-
-\- Eliminación permitida a Administrador.
-
-\- Rechazo de contraseña incorrecta y token inválido.
-
-\- Hash bcrypt comprobado en HeidiSQL.
-
-
-
-Quedan pendientes la integración autenticada en React y pruebas específicas de expiración, límite 429, CORS, XSS e inyección SQL.
-
-
-
-El backend todavía no cuenta con una suite automatizada: `npm test` contiene un marcador que termina con error.
-
-
-
-\## Comandos
-
-
-
-| Carpeta | Comando | Función |
-
-|---|---|---|
-
-| backend | npm run dev | Desarrollo con nodemon |
-
-| backend | npm start | Arranque con Node.js |
-
-| frontend | npm run dev | Servidor Vite |
-
-| frontend | npm run build | Compilar |
-
-| frontend | npm run preview | Previsualizar compilación |
-
-| frontend | npm run lint | Análisis del código |
-
-
-
-\## Errores frecuentes
-
-
-
-| Error | Revisión |
-
-|---|---|
-
-| ECONNREFUSED | Iniciar MySQL y comprobar host/puerto |
-
-| JWT\_SECRET inválida | Revisar `.env` y el script de seguridad |
-
-| 401 | Proporcionar un token válido |
-
-| 403 | Comprobar el rol del usuario |
-
-| 429 | Esperar a que termine la ventana del limitador |
-
-| Puerto ocupado | Detener el otro servidor o cambiar el puerto |
-
-
-
-\## Autor
-
-
-
-\*\*Piero Huamani — SENATI\*\*  
-
-Fullstack Developer Software - Seminario
-
-
-
-Práctica inicial relacionada: \[Mi API Node.js](https://github.com/Piero200314/mi-api-nodejs).
-
+Este paquete no demuestra que Render esté publicado ni que el último push llegara a GitHub. Esas comprobaciones se hacen desde tu instalación.
