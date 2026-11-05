@@ -1,5 +1,8 @@
 # Verificación de NEXO 4
 
+> **Documento histórico anterior a V5.** El despliegue actual utiliza PostgreSQL de Aiven y está [publicado en Render](https://inventario-fullstack-1.onrender.com). Consulta [la configuración actual](../LEEME_RENDER.md) y [el estado verificado](CAMBIOS_V5.md). Los pasos y pendientes de esta guía describen la entrega original; no repitas importaciones sobre una base poblada.
+
+
 Fecha: 4 de noviembre de 2026. Las pruebas con bases se ejecutaron sobre instancias temporales y datos ficticios. No se conectó al proyecto Neon del alumno ni a su MariaDB de la otra PC.
 
 ## Backend
@@ -35,3 +38,4 @@ Se verifican compilación de producción y Oxlint con deny-warnings. La prueba e
 - Completar el QA de seguridad y recuperación; los casos aprobados no acreditan seguridad absoluta.
 
 Los scripts de integración se ejecutan solo contra bases locales desechables con prefijo nexo_test_. No ejecutes pruebas destructivas sobre tu proyecto real de Neon.
+

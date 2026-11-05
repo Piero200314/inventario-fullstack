@@ -1,5 +1,8 @@
 # Neon, traslado de datos y uso desde otra PC
 
+> **Documento histórico anterior a V5.** El despliegue actual utiliza PostgreSQL de Aiven y está [publicado en Render](https://inventario-fullstack-1.onrender.com). Consulta [la configuración actual](../LEEME_RENDER.md) y [el estado verificado](CAMBIOS_V5.md). Los pasos y pendientes de esta guía describen la entrega original; no repitas importaciones sobre una base poblada.
+
+
 ## 1. Qué cambia
 
 El navegador se comunica con tu API Express. La API se conecta a PostgreSQL de Neon con TLS verificado. Las credenciales de la base permanecen en el backend, nunca en React. Se conserva la alternativa MariaDB local.
@@ -171,3 +174,4 @@ Opcionalmente puedes mantener un perfil `backend/.env.local` y otro `backend/.en
 - **Límite del exportador:** 200 MB de JSON por archivo en esta utilidad para el proyecto. Para volúmenes superiores utiliza un proceso de migración por lotes y respaldo propio de PostgreSQL. Mantén respaldos independientes: tener un servidor cloud no sustituye probar una restauración.
 
 Fuentes técnicas consultadas: https://neon.com/docs/guides/sequelize ; https://neon.com/docs/connect/connect-from-any-app ; https://sequelize.org/docs/v6/other-topics/dialect-specific-things/ ; https://node-postgres.com/features/ssl .
+
