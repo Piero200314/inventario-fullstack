@@ -1,56 +1,32 @@
 # NEXO en Render con PostgreSQL de Aiven
 
-## Qué se publica
+**[Abrir NEXO en Render](https://inventario-fullstack-1.onrender.com)** · [Comprobar API](https://inventario-fullstack-1.onrender.com/api/health)
 
-Un solo **Web Service de Node** sirve la web React y la API Express. La base de datos y las fotos siguen en el PostgreSQL de Aiven ya configurado. No crees otra base en Render ni repitas la importación del catálogo.
+## Estado actual
 
-Los datos del código van a GitHub; los registros, las contraseñas de acceso, las fotos guardadas en PostgreSQL y los movimientos no se publican en el repositorio. Una vez desplegado, NEXO funciona aunque tu computadora esté apagada.
+El servicio `inventario-fullstack-1` está publicado. El despliegue inicial mostró **Deploy succeeded / Live** para el commit `9450a92`, correspondiente a la integración del [Pull Request #1](https://github.com/Piero200314/inventario-fullstack/pull/1) en `main`.
 
-Este parche requiere el proyecto NEXO V4 con los parches de Aiven ya instalados. Copia su contenido en `C:\laragon\www\inventario-fullstack`. No modifica tu .env. Añade la configuración de Render y reemplaza backend/index.js y frontend/src/services/api.js.
+El 5 de noviembre de 2026 se verificaron HTTP 200 para la página principal y `/api/health`, conexión `postgres`, almacenamiento de imágenes `database` y HTTP 401 al consultar `/api/productos` sin token. Estas comprobaciones no sustituyen el recorrido autenticado de la sección 5.
 
-## 1. Respaldo y rama para probar
+## 1. Cómo funciona y cómo actualizarlo
 
-En Git Bash:
+Un solo **Web Service de Node** sirve la web React y la API Express. Los registros y las fotografías se conservan en PostgreSQL de Aiven. La aplicación funciona aunque la computadora de desarrollo esté apagada.
 
-```bash
-cd /c/laragon/www/inventario-fullstack
-node backend/scripts/exportar-datos.js --archivo backups/nexo-antes-render.json
-git remote -v
-git switch -c actualizacion-pc-principal-v5
-git add .
-node scripts/revisar-git.cjs
-git diff --cached --stat
-```
+Este repositorio ya incluye la preparación de Render; no vuelvas a aplicar parches antiguos, crear otra base ni importar un respaldo completo sobre el Aiven poblado.
 
-El origen debe ser tu repositorio `Piero200314/inventario-fullstack`. Si la rama ya existe usa `git switch actualizacion-pc-principal-v5`. Si el respaldo ya existe, elige otro nombre: no lo sobreescribas.
+Para cambios nuevos, crea una rama desde `main` actualizado, revisa los archivos que vas a publicar y abre un Pull Request hacia `main`. Antes de cada commit ejecuta `node scripts/revisar-git.cjs` y revisa `git diff --cached`: el script comprueba rutas, no todo el contenido ni el historial.
 
-No hagas commit si la comprobación avisa de archivos privados. Por ejemplo, para un .env previamente rastreado:
-
-```bash
-git rm --cached --ignore-unmatch backend/.env frontend/.env backend/.env.antes-aiven
-node scripts/revisar-git.cjs
-```
-
-Si muestra otros archivos, quita del índice exactamente esas rutas. El comando anterior conserva las copias locales. Si alguna credencial llegó a publicarse en un commit anterior, retirarla del último commit no la elimina del historial: cambia esa credencial.
-
-Cuando la revisión termine correctamente:
-
-```bash
-git commit -m "feat: preparar NEXO para pruebas en Render con Aiven"
-git push -u origin actualizacion-pc-principal-v5
-```
-
-La revisión detecta rutas privadas y generadas; revisa también el contenido que vas a publicar. Mantén respaldos y .env fuera de GitHub.
+`.env`, certificados y respaldos permanecen fuera de Git. Las credenciales del servicio se administran en **Environment** de Render. Si un secreto llegó a publicarse, retirarlo del último commit no lo elimina del historial: hay que cambiarlo.
 
 ## 2. Crear el servicio en Render
 
-Abre https://dashboard.render.com y entra con tu cuenta. Pulsa **New > Web Service**, conecta GitHub y selecciona `Piero200314/inventario-fullstack`.
+El servicio actual ya existe. La siguiente configuración permite revisar sus ajustes o reproducir el despliegue en otro servicio. Para uno nuevo, abre [Render Dashboard](https://dashboard.render.com), pulsa **New > Web Service**, conecta GitHub y selecciona `Piero200314/inventario-fullstack`.
 
 | Campo | Valor |
 |---|---|
-| Name | nexo-inventario-pruebas, o un nombre disponible |
+| Name | `inventario-fullstack-1` en el servicio actual; un nombre disponible si creas otro |
 | Language / Runtime | Node |
-| Branch | actualizacion-pc-principal-v5 |
+| Branch | `main`, con la actualización V5 integrada |
 | Root Directory | Déjalo vacío: se necesitan backend y frontend |
 | Build Command | `node backend/scripts/build-render.js` |
 | Start Command | `node backend/index.js` |
@@ -99,13 +75,13 @@ No pegues aquí la URI ni una contraseña. No subas el .env como archivo del rep
 
 ## 5. Desplegar y comprobar
 
-Pulsa **Create Web Service / Deploy**. Cuando el registro indique `NEXO listo` y el servicio esté **Live**, abre la URL HTTPS que Render le asigne. Esa es la URL para compartir: no localhost.
+El servicio actual ya está **Live** en [https://inventario-fullstack-1.onrender.com](https://inventario-fullstack-1.onrender.com). Para un servicio nuevo, pulsa **Deploy web service** y espera a que el registro indique `NEXO listo` y el estado sea **Live**.
 
 Comprueba primero `/api/health`: debe devolver `ok: true`, `database: postgres` e `imagenes: database`. Entra con tu cuenta actual; cambiar JWT_SECRET no cambia contraseñas, aunque obliga a iniciar sesión otra vez.
 
 | Prueba | Resultado esperado |
 |---|---|
-| Catálogo | 20 productos activos si ya aplicaste la limpieza; fotografías visibles |
+| Catálogo | Productos y fotografías esperados según los datos actuales de Aiven; sin forzar una cantidad fija |
 | Refrescar /productos y /resumen | Carga la aplicación y conserva sesión vigente |
 | Modificar el precio de un producto de prueba | Cambio visible sin F5; persiste al recargar |
 | Registrar una venta válida | Descuenta stock y actualiza estadísticas e historial |
@@ -118,9 +94,11 @@ Las pruebas contra esta misma base cambian también los datos que ves desde tu P
 
 El plan Free se suspende tras 15 minutos sin tráfico; al abrir el enlace puede tardar alrededor de un minuto en arrancar. Esto no borra los datos de Aiven. El disco de Render es temporal, por eso las fotos se guardan con IMAGE_STORAGE=database.
 
-## 6. Después de las pruebas
+## 6. Próximas actualizaciones
 
-La rama main permanece intacta durante las pruebas. Cuando confirmes el funcionamiento, crea un Pull Request de `actualizacion-pc-principal-v5` hacia `main`. Después de integrarlo, cambia la rama de despliegue en Render a main.
+El Pull Request inicial ya está integrado en `main`. Para cambios nuevos, utiliza otra rama y un nuevo Pull Request. Revisa en Render qué rama está configurada para desplegar y si Auto-Deploy está activado. Una actualización solo está publicada cuando su despliegue termina correctamente y se comprueba la versión pública.
+
+Usa la tabla de la sección 5 para completar las pruebas autenticadas. Registra resultados reales, sin publicar tokens, contraseñas ni datos privados en capturas.
 
 ## Fuentes oficiales
 
@@ -132,4 +110,5 @@ La rama main permanece intacta durante las pruebas. Cuando confirmes el funciona
 
 ## Validación del parche
 
-Compilación completa y lint del frontend; prueba en PostgreSQL real con navegación Chromium: login, fotos desde la base, venta, actualización del resumen, recarga de rutas React, autenticación de API, bloqueo de .env y ausencia de peticiones a localhost:3006 en la versión publicada. Esto es una validación local del modo de producción; el despliegue en tu cuenta Render todavía debe ejecutarse y comprobarse.
+Compilación completa y lint del frontend; prueba en PostgreSQL real con navegación Chromium: login, fotos desde la base, venta, actualización del resumen, recarga de rutas React, autenticación de API, bloqueo de .env y ausencia de peticiones a localhost:3006 en la versión publicada. Esas pruebas corresponden al entorno local de producción. La publicación en Render y las tres comprobaciones públicas indicadas al comienzo de esta guía ya están confirmadas; el recorrido autenticado completo del sitio público sigue pendiente.
+

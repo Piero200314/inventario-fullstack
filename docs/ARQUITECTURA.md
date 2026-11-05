@@ -1,10 +1,16 @@
-# NEXO 2 · decisiones técnicas y alcance
+# NEXO V5 · arquitectura y alcance
+
+Despliegue actual: [NEXO en Render](https://inventario-fullstack-1.onrender.com). Web y API comparten dominio; PostgreSQL y las imágenes están en Aiven.
 
 ## Flujo de datos
 
-React → API Express con JWT → servicios de logística → transacción Sequelize → MariaDB/MySQL.
+React (Render) → API Express con JWT (Render) → servicios de logística → transacción Sequelize → PostgreSQL (Aiven).
 
-Las fotos siguen una ruta separada: selección → optimización WebP en el navegador → carga autenticada → disco persistente del backend. La base registra la ruta, no una imagen base64. La fuente Inter se distribuye dentro del frontend mediante Fontsource.
+MySQL/MariaDB sigue disponible como alternativa de desarrollo local. Cada proceso selecciona una base mediante configuración; no hay sincronización bidireccional automática.
+
+Las fotos siguen esta ruta: selección → optimización WebP en el navegador → carga autenticada → tabla `nexo_imagenes` de PostgreSQL con `IMAGE_STORAGE=database`. Se almacenan como binario; el catálogo las solicita mediante `/media/:archivo`. No dependen del disco temporal de Render. La configuración local también admite archivos en `backend/uploads`.
+
+La fuente Inter se distribuye dentro del frontend mediante Fontsource. Express sirve la compilación de Vite cuando `SERVE_FRONTEND=true` y atiende las rutas React al recargarlas.
 
 ## Persistencia y compatibilidad
 
@@ -16,6 +22,7 @@ Se conservan las tablas originales `productos` y `usuarios`. La migración añad
 | `nexo_proveedores` | Empresa, contacto y datos operativos |
 | `nexo_movimientos` | Aperturas, recepciones, ventas, salidas y ajustes con saldo anterior/posterior y responsable |
 | `nexo_avisos` | Estado del último aviso externo enviado por producto |
+| `nexo_imagenes` | Fotografías binarias compartidas entre procesos que usan la misma base |
 
 No se infiere el costo a partir del precio de venta: un producto antiguo conserva costo desconocido hasta que se registre. El stock existente se registra como apertura, no como compra ni venta histórica. No se modifican las contraseñas de usuarios.
 
@@ -29,7 +36,7 @@ No se infiere el costo a partir del precio de venta: un producto antiguo conserv
 - La clave evita duplicados mientras se conserva la solicitud. Si el usuario cierra el formulario y registra deliberadamente otra operación, se genera una clave nueva.
 - Aperturas y movimientos no se editan ni eliminan desde la API. Un error se compensa con un ajuste documentado del Administrador.
 - Un producto con stock no puede archivarse. El archivo oculta el producto pero mantiene relaciones e historial.
-- La coherencia transaccional asume tablas InnoDB. Si tu instalación antigua usa otro motor, conviértelo y valida antes de usar el sistema.
+- PostgreSQL aporta transacciones y bloqueo de filas en el despliegue actual. En la alternativa MySQL/MariaDB se requieren tablas InnoDB; valida el motor de una instalación antigua.
 
 ## Roles
 
@@ -49,7 +56,8 @@ La API comprueba los roles; ocultar un botón no es el control de seguridad. El 
 | Método y ruta | Función |
 |---|---|
 | POST `/api/auth/login` | Sesión existente |
-| GET/POST `/productos` | Consultar/crear producto |
+| GET `/api/health` | Disponibilidad y tipo de base/almacenamiento, sin credenciales |
+| GET/POST `/api/productos` | Consultar/crear producto |
 | PUT `/productos/:id` | Editar metadatos, precio y límites con revisión |
 | DELETE `/productos/:id` | Archivar, enviando `{revision}`; no borrar |
 | GET/POST `/api/proveedores` | Consultar/crear proveedor |
@@ -60,7 +68,9 @@ La API comprueba los roles; ocultar un botón no es el control de seguridad. El 
 | POST `/api/imagenes` | Archivo binario PNG/JPEG/WebP, máximo 3 MB, autenticado |
 | GET `/media/:archivo` | Fotografía de producto pública |
 
-`VITE_API_URL` debe contener el origen del backend, por ejemplo `https://api.example.com`, sin añadir `/api`. Todos los productos y contactos se consultan con autenticación, pero las fotografías de catálogo son públicas para mostrar imágenes normales. No subas documentos personales como fotos.
+En Render, el frontend usa el origen de la propia página. En desarrollo, `VITE_API_URL` puede contener el origen HTTP del backend, por ejemplo `http://localhost:3006`, sin añadir `/api` ni credenciales de base.
+
+La API conserva `/productos` y `/productos/:id` por compatibilidad, y ofrece también sus variantes `/api/productos`. Una navegación HTML a `/productos` sirve React; las consultas de datos siguen requiriendo token. Todos los productos y contactos se consultan con autenticación, pero las fotografías de catálogo son públicas para mostrar imágenes normales. No subas documentos personales como fotos.
 
 ## Cálculos
 
@@ -94,6 +104,7 @@ El atributo `translate=no` y la etiqueta `notranslate` reducen interferencias de
 3. Lotes, seriales, vencimiento, FEFO y devoluciones vinculadas.
 4. Paginación, índices adicionales y reportes agregados de servidor; ABC con historia suficiente.
 5. Costeo definido con un profesional contable: promedio ponderado o FIFO.
-6. Despliegue, almacenamiento de objetos y copias programadas con simulacro de restauración.
+6. Almacenamiento de objetos si crece el catálogo y copias programadas con simulacro de restauración.
 
 Esta entrega es una versión funcional ampliada, no un ERP terminado ni un sistema fiscal.
+

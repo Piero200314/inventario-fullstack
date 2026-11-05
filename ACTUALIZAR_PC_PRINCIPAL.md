@@ -1,6 +1,8 @@
 # Actualizar la PC principal a NEXO V5
 
-El ZIP reúne todos los archivos de código entregados. No ejecuta cambios en las bases por copiarlo y no incluye credenciales reales.
+La actualización V5 ya está integrada en `main` y [publicada en Render](https://inventario-fullstack-1.onrender.com). Esta guía sirve para instalar o actualizar el entorno de desarrollo de otra PC. No es necesario ejecutar una copia local para usar la web publicada.
+
+El paquete V5 reúne los archivos de código; copiarlo no traslada registros ni credenciales.
 
 ## 1. Conserva tu instalación
 
@@ -95,33 +97,36 @@ preparar-catalogo-fotos.js solo retira LEGACY-4 a LEGACY-8, los cinco selecciona
 
 ## 8. GitHub y Render
 
-El último push mostrado fue rechazado por usar otra cuenta. No se confirmó una subida posterior ni un servicio Live. Puedes comprobar el estado real desde la raíz:
+La rama `actualizacion-pc-principal-v5` se subió correctamente y el [Pull Request #1](https://github.com/Piero200314/inventario-fullstack/pull/1) ya se integró en `main`. El servicio está publicado en [Render](https://inventario-fullstack-1.onrender.com).
+
+Para actualizar un clon existente, primero comprueba su estado desde la raíz:
 
 ```bash
-git remote -v
 git status
+git remote -v
 git fetch origin
-git branch -a
 ```
 
-Conserva el repositorio; no uses push --force. Para preparar esta actualización sin tocar main:
+Si hay cambios propios, consérvalos en una rama o commit antes de continuar. Con el árbol de trabajo limpio:
 
 ```bash
-git switch -c actualizacion-pc-principal-v5
-git add .
+git switch main
+git pull --ff-only origin main
+npm.cmd ci --prefix backend
+npm.cmd ci --prefix frontend
+```
+
+Si `--ff-only` rechaza la actualización, detente y revisa las diferencias; no uses `push --force` ni borres cambios para superarlo. Conserva tus `.env`, certificados y respaldos privados.
+
+Para la siguiente modificación, crea una rama nueva desde `main` actualizado. Antes de hacer commit revisa:
+
+```bash
 node scripts/revisar-git.cjs
 git diff --cached --stat
+git diff --cached
 ```
 
-Si la revisión detecta rutas privadas ya rastreadas, retira exactamente esas rutas del índice con git rm --cached, sin borrar las copias locales; repite la revisión. No hagas commit con .env, respaldos ni certificados. Revisa también el contenido de los cambios.
+El script detecta rutas privadas o generadas, pero no sustituye revisar el contenido. No incluyas `.env`, respaldos, certificados ni valores reales de credenciales. Abre un nuevo Pull Request hacia `main` cuando los cambios estén listos.
 
-Cuando esté correcto:
+La configuración del servicio está en [LEEME_RENDER.md](LEEME_RENDER.md). Las credenciales se administran en Render y los registros/fotos permanecen en Aiven. Publicar código no importa ni sincroniza automáticamente el inventario MySQL local.
 
-```bash
-git commit -m "feat: consolidar NEXO con Aiven, catalogo y Render"
-git push -u origin actualizacion-pc-principal-v5
-```
-
-En Render sigue LEEME_RENDER.md, seleccionando **actualizacion-pc-principal-v5**, la rama que acabas de subir. Root Directory vacío, Build Command `node backend/scripts/build-render.js` y Start Command `node backend/index.js`.
-
-Las credenciales se configuran directamente en Render, el certificado en Secret Files, y los registros/fotos siguen en Aiven. Publicar el código no vuelve a importar ni sincronizar la base local.
